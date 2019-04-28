@@ -11,23 +11,15 @@
 import pygame, sys, time
 from pygame.locals import *
 from settings import Settings
+import datetime
 
-def main():
-    list_x = (i * 100 + 78 for i in range(1, 9))
-    list_y = (i * 100 + 42 for i in range(1, 5))
-    print(list_x)
-    print(list_y)
-    print(179 in list_x)
+time1 = datetime.datetime.now()
 
+time2 = time1 + datetime.timedelta(days=0, hours=0, minutes=5, seconds=2)
 
-sett = Settings()
-str1 = 'bing'
-count = -1
-
-for qz in sett.pieces_list_red:
-    count += 1
-    if str1 == qz:
-        break
-
-print(count)
-
+howlongdays = (time2 - time1).days
+howlongseconds = (time2 - time1).seconds
+print(time1)
+print(time2)
+print(type(howlongdays))
+print(type(howlongseconds))

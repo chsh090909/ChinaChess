@@ -29,7 +29,7 @@ class Settings(object):
         #设置棋子背面的图案
         self.pieces_back = 'images/pieces_back.png'
         #设置屏幕刷新率
-        self.FPS = 60
+        self.FPS = 30
         #设置颜色
         #                 R    G    B
         self.GRAY =     (100, 100, 100)
@@ -52,3 +52,9 @@ class Settings(object):
         #设置游戏结束图片
         self.wonimage = 'images/win.gif'
         self.font_win_size = 50
+        #设置走棋步骤记录的文件名称
+        self.filename = 'chess.info'
+        #设置文件的游戏开头语
+        self.beginstr = "本轮游戏开始！！！当前第1局！"
+        #设置文件的游戏结束语(总结游戏内容)
+        self.endstr = ""

@@ -3,6 +3,8 @@
 
 import pygame
 import random
+import time
+import os
 from math import fabs
 
 class GameFunctions(object):
@@ -206,7 +208,7 @@ class GameFunctions(object):
             self.tieWon(totalCount, tieCount, playerinfo)
             print('hasWon==>noneCount == 32==>playerinfo: %s' % playerinfo)
             self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-            return True
+            return (True, '平局')
         elif falseCount == 0:
             if noneCount != 32:
                 if redCount == 0:
@@ -215,26 +217,26 @@ class GameFunctions(object):
                         self.player2Won(totalCount, playerinfo)
                         print('hasWon==>redCount == 0(red == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
                         self.drawWon(displaySurf, playerinfo, self.all_settings.player2_name + '胜', fpsClock)
-                        return True
+                        return (True, self.all_settings.player2_name + '(黑方)胜')
                     elif 'black' == playerinfo['pieceColor']:
                         # playerinfo['wonPlayer'] = self.all_settings.player1_name
                         self.player1Won(totalCount, wonCount, playerinfo)
                         print('hasWon==>redCount == 0(black == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
                         self.drawWon(displaySurf, playerinfo, self.all_settings.player1_name + '胜', fpsClock)
-                        return True
+                        return (True, self.all_settings.player1_name + '(黑方)胜')
                 elif blackCount == 0:
                     if 'red' == playerinfo['pieceColor']:
                         # playerinfo['wonPlayer'] = self.all_settings.player1_name
                         self.player1Won(totalCount, wonCount, playerinfo)
                         print('hasWon==>blackCount == 0(red == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
                         self.drawWon(displaySurf, playerinfo, self.all_settings.player1_name + '胜', fpsClock)
-                        return True
+                        return (True, self.all_settings.player1_name + '(红方)胜')
                     elif 'black' == playerinfo['pieceColor']:
                         # playerinfo['wonPlayer'] = self.all_settings.player2_name
                         self.player2Won(totalCount, playerinfo)
                         print('hasWon==>blackCount == 0(black == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
                         self.drawWon(displaySurf, playerinfo, self.all_settings.player2_name + '胜', fpsClock)
-                        return True
+                        return (True, self.all_settings.player2_name + '(红方)胜')
                 elif redCount == 1 and blackCount == 1:
                     newlist = []
                     for x in range(8):
@@ -251,22 +253,22 @@ class GameFunctions(object):
                         self.tieWon(totalCount, tieCount, playerinfo)
                         print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                         self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                        return True
+                        return (True, '平局')
                     elif (list1_color == 'black' and list1_name == 'jiang') and (list2_color == 'red' and list2_name in ['shuai', 'pao1', 'pao2']):
                         self.tieWon(totalCount, tieCount, playerinfo)
                         print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                         self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                        return True
+                        return (True, '平局')
                     elif (list1_color == 'red' and list1_name in ['pao1', 'pao2']) and (list2_color == 'black' and list2_name in ['pao1', 'pao2', 'zu1', 'zu2', 'zu3', 'zu4', 'zu5']):
                         self.tieWon(totalCount, tieCount, playerinfo)
                         print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                         self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                        return True
+                        return (True, '平局')
                     elif (list1_color == 'black' and list1_name in ['pao1', 'pao2']) and (list2_color == 'red' and list2_name in ['pao1', 'pao2', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5']):
                         self.tieWon(totalCount, tieCount, playerinfo)
                         print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                         self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                        return True
+                        return (True, '平局')
                     else:
                         if fabs(newlist[0][0] - newlist[1][0]) == 1 and fabs(newlist[0][1] - newlist[1][1]) == 1:
                             nowPlayer = playerinfo['nowPlayer']
@@ -294,27 +296,50 @@ class GameFunctions(object):
                                     if list2_name == qz:
                                         break
                             if red_index < black_index:
-                                if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
+                                if black_index in [11, 12, 13, 14, 15] and red_index == 0:
+                                    if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return (True, '平局')
+                                    elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'black':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return (True, '平局')
+                                elif nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
                                     self.tieWon(totalCount, tieCount, playerinfo)
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                                    return True
+                                    return (True, '平局')
                                 elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'red':
                                     self.tieWon(totalCount, tieCount, playerinfo)
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                                    return True
+                                    return (True, '平局')
                             elif red_index > black_index:
-                                if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
+                                if red_index in [11, 12, 13, 14, 15] and black_index == 0:
+                                    if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return (True, '平局')
+                                    elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'red':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return (True, '平局')
+                                elif nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
                                     self.tieWon(totalCount, tieCount, playerinfo)
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                                    return True
+                                    return (True, '平局')
                                 elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'black':
                                     self.tieWon(totalCount, tieCount, playerinfo)
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
-                                    return True
+                                    return (True, '平局')
+        return(False, '')
 
     def player1Won(self, totalCount, wonCount, playerinfo):
         totalCount += 1
@@ -357,13 +382,13 @@ class GameFunctions(object):
             pygame.time.wait(1000)
 
     def drawBoard(self, displaySurf, box_x, box_y, revealedBoxes, playerinfo, all_pieces, **kwargs):
-        #加载初始化画布内容，包括棋盘和玩家参数信息等
+        # 加载初始化画布内容，包括棋盘和玩家参数信息等
         self.loadPieceBoard(displaySurf)
         self.loadPiecesBack(displaySurf, box_x, box_y, revealedBoxes, all_pieces, **kwargs)
         self.loadPlayerMain(displaySurf, playerinfo)
 
     def pieceVSpiece(self, displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces):
-        #核心部分：两个棋子之间互相比较
+        # 核心部分：两个棋子之间互相比较
         fs_x = firstSelection[0]
         fs_y = firstSelection[1]
         ss_x = secSelection[0]
@@ -499,8 +524,7 @@ class GameFunctions(object):
                                                                     ['jiang', 'shuai'],
                                                                     displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces, beginmove_y, image)
         elif revealedBoxes[ss_x][ss_y] == False:
-            firstSelection = None
-            secSelection = None
+            pass
         elif revealedBoxes[ss_x][ss_y] == None:
             image = pygame.image.load(firstSelection[4]).convert_alpha()
             image = pygame.transform.smoothscale(image, (self.all_settings.pieces_size, self.all_settings.pieces_size))
@@ -516,9 +540,7 @@ class GameFunctions(object):
                                         'zu1', 'zu2', 'zu3', 'zu4', 'zu5', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5'],
                                         [None], displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces, beginmove_y, image)
                 revealedBoxes[ss_x][ss_y] = True
-        firstSelection = None
-        secSelection = None
-        return pieceMoveCount
+        return (pieceMoveCount, all_pieces, revealedBoxes)
 
     def pieceVSpieceMoveX(self, sourcepiecelist, piecelist, displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces, beginmove_x, image):
         fs_x = firstSelection[0]
@@ -573,3 +595,120 @@ class GameFunctions(object):
                 all_pieces[ss_x][ss_y] = [None, None]
                 mouse_clecked_count += 1
         return mouse_clecked_count
+
+    def writeinfofile(self, filename, writestr):
+        # 这个方法用来写入走棋详细步骤的内容
+        # 按照走棋执行步骤依次写入
+        # filename = self.all_settings.filename
+        f = open(filename, 'ab+')
+        writestr = (writestr + os.linesep).encode('utf-8')
+        f.write(writestr)
+        f.close()
+        pass
+
+    def writeinfofilerewrite(self, filename, writelist):
+        # 这个方法用来重写悔棋时候，重新写入chess.info的内容
+        # filename = self.all_settings.filename
+        f = open(filename, 'w+', encoding='utf-8')
+        f.writelines(writelist)
+        f.close()
+        pass
+
+    def readinfofile(self, filename):
+        # 这个方法用来读取走棋详细步骤的内容
+        # filename = self.all_settings.filename
+        f = open(filename, 'r', encoding='utf-8')
+        linelist = f.readlines()
+        f.close()
+        return linelist
+        pass
+
+    def getnowtime(self):
+        # 获取当前系统时间
+        ntime = time.strftime('%Y-%m-%d %H:%M:%S')
+        return ntime
+        pass
+
+    def howlongtime(self, begintime, endtime):
+        # 获取一轮游戏总共耗时的时间，返回str
+        howlongdays = (endtime - begintime).days
+        howlongsecs = (endtime - begintime).seconds
+        hours = int(howlongsecs / 3600)
+        mins = int((howlongsecs % 3600) / 60)
+        secs = (howlongsecs % 3600) % 60
+        howlongtimestr = ''
+        if howlongdays != 0:
+            howlongdays = '%s天' % (str(howlongdays))
+            howlongtimestr += howlongdays
+        if hours != 0:
+            hours = '%s小时' % (str(hours))
+            howlongtimestr += hours
+        if mins != 0:
+            mins = '%s分' % (str(mins))
+            howlongtimestr += mins
+        if secs != 0:
+            secs = '%s秒' % (str(secs))
+            howlongtimestr += secs
+        return howlongtimestr
+
+
+
+    def getfilename(self):
+        # 返回文件名带时间后缀
+        filename = self.all_settings.filename
+        filenamelist = filename.split('.')
+        timename = time.strftime('_%Y_%m_%d_%H_%M_%S')
+        filename1 = filenamelist[0] + timename
+        filename = filename1 + '.info'
+        return filename
+        pass
+
+    def revealedboxesstrtolist(self, revealedBoxesstr):
+        # 将str状态下的revealedboxes转换成list状态
+        revealedBoxesstr = revealedBoxesstr.replace('[', '')
+        revealedBoxesstr = revealedBoxesstr.replace(']', '')
+        revealedBoxesstr = revealedBoxesstr.strip('\n')
+
+        strlist = revealedBoxesstr.split(',')
+        boxes_list = []
+        boxes_list1 = []
+        count = 0
+        for str in strlist:
+            str = str.strip(' ')
+            if str == 'True':
+                boxes_list1.append(True)
+            elif str == 'False':
+                boxes_list1.append(False)
+            elif str == 'None':
+                boxes_list1.append(None)
+            count += 1
+            if count % 4 == 0:
+                boxes_list.append(boxes_list1)
+                boxes_list1 = []
+        return boxes_list
+
+    def allpiecesstrtolist(self, all_piecesstr):
+        # 将str状态下的all_pieces转换成list状态
+        all_piecesstr = all_piecesstr.replace('[', '')
+        all_piecesstr = all_piecesstr.replace(']', '')
+        all_piecesstr = all_piecesstr.replace('\'', '')
+        all_piecesstr = all_piecesstr.strip('\n')
+        strlist = all_piecesstr.split(',')
+        list1 = []
+        list2 = []
+        list3 = []
+        count1, count2 = 0, 0
+        for str in strlist:
+            str = str.strip(' ')
+            if str == 'None':
+                str = None
+            list1.append(str)
+            count1 += 1
+            count2 += 1
+            if count1 % 2 == 0:
+                list2.append(list1)
+                list1 = []
+            if count2 % 8 == 0:
+                list3.append(list2)
+                list2 = []
+        return list3
