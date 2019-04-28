@@ -294,7 +294,18 @@ class GameFunctions(object):
                                     if list2_name == qz:
                                         break
                             if red_index < black_index:
-                                if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
+                                if black_index in [11, 12, 13, 14, 15] and red_index == 0:
+                                    if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return True
+                                    elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'black':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return True
+                                elif nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
                                     self.tieWon(totalCount, tieCount, playerinfo)
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
@@ -305,7 +316,18 @@ class GameFunctions(object):
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
                                     return True
                             elif red_index > black_index:
-                                if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
+                                if red_index in [11, 12, 13, 14, 15] and black_index == 0:
+                                    if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return True
+                                    elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'red':
+                                        self.tieWon(totalCount, tieCount, playerinfo)
+                                        print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
+                                        self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
+                                        return True
+                                elif nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
                                     self.tieWon(totalCount, tieCount, playerinfo)
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局', fpsClock)
