@@ -29,7 +29,7 @@ class Settings(object):
         #设置棋子背面的图案
         self.pieces_back = 'images/pieces_back.png'
         #设置屏幕刷新率
-        self.FPS = 30
+        self.FPS = 60
         #设置颜色
         #                 R    G    B
         self.GRAY =     (100, 100, 100)

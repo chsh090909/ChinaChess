@@ -44,7 +44,7 @@ def main():
     mouse_clecked_count = 0
     player1_checked_count = 0
     player2_checked_count = 0
-
+    # 游戏开始，写入游戏开始信息
     begintime = datetime.datetime.now()
     beginstr = "*" * 20 + all_settings.beginstr + "*" * 20
     writestr = '%s|%d|%s|%s|(%d, %d)' % (game_fn.getnowtime(), mouse_clecked_count, playerinfo['nowPlayer'], 'None_None', -1, -1)
@@ -72,16 +72,18 @@ def main():
                 player1woncount = playerinfo['wonCount']
                 tiecount = playerinfo['tieCount']
                 player2woncount = totalcount - player1woncount - tiecount
-                gameoverstr = "**********本轮游戏时长为%s，总共完成%d局" % (howlongtime, totalcount)
+                gameoverstr = "*" * 20
+                gameoverstr += "本轮游戏时长为%s，总共完成%d局" % (howlongtime, totalcount)
                 if totalcount != 0:
                     if player1woncount > player2woncount:
-                        gameoverstr += "，其中%s技高一筹，胜%d局，" % (all_settings.player1_name, player1woncount)
+                        gameoverstr += "，其中%s技高一筹，胜%d局" % (all_settings.player1_name, player1woncount)
                     elif player1woncount < player2woncount:
-                        gameoverstr += "，其中%s技高一筹，胜%d局，" % (all_settings.player2_name, player2woncount)
+                        gameoverstr += "，其中%s技高一筹，胜%d局" % (all_settings.player2_name, player2woncount)
                     else:
-                        gameoverstr += "，两位玩家旗鼓相当，均胜%d局，" % player1woncount
-                    gameoverstr += "打平%d局" % tiecount
-                gameoverstr += "**********"
+                        gameoverstr += "，两位玩家旗鼓相当，均胜%d局" % player1woncount
+                    if tiecount != 0:
+                        gameoverstr += "，打平%d局" % tiecount
+                gameoverstr += "*" * 20
                 game_fn.writeinfofile(filename, gameoverstr)
                 pygame.quit()
                 sys.exit()
@@ -160,112 +162,65 @@ def main():
                     piece_image_url = None
                     piece_name_color = None
                     piece_name_name = None
-                print('当前%s走棋！' % nowPlayer)
+                # print('当前%s走棋！' % nowPlayer)
 
-                if nowPlayer == all_settings.player1_name:
-                    if piece_name_color == player1PieceColor:
-                        # 当前棋子的颜色与player1玩家的执方颜色一致，就需要判断用户是第几次选择该棋子：
-                        # 如果是第一次选择该棋子，就获取该棋子的颜色和棋面，用于和第二次的棋子比大小；
-                        # 如果是第二次选择该棋子了，就认为重复选择了，就取消该棋子的选中功能；
-                        if mouse_clecked:
+                if (nowPlayer == all_settings.player1_name and piece_name_color == player1PieceColor) or (nowPlayer == all_settings.player2_name and piece_name_color == player2PieceColor):
+                    if mouse_clecked:
+                        if nowPlayer == all_settings.player1_name:
                             player1_checked_count += 1
-                            if player1_checked_count % 2 == 1:
-                                print('Player1走棋！选择了%s，当前第1次选择！允许选择！' % piece_name)
-                                firstSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
-                                print('Player1的firstSelection: ' + str(firstSelection))
-                            else:
-                                print('Player1走棋！选择了%s，当前第2次选择！取消选择！' % piece_name)
-                                firstSelection = None
-                                print('Player1的firstSelection: ' + str(firstSelection))
-                    else:
-                        # 当前棋子的颜色与player1玩家的执方颜色不一致
-                        # 获取当前棋子棋面，和前面的firstSelection比大小
-                        if mouse_clecked:
-                            if firstSelection != None:
-                                if revealedBoxes[box_numX][box_numY] == True:
-                                    print('Player1走棋完成！第二次选择了%s' % piece_name)
-                                    secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
-                                    print('Player1的secSelection: ' + str(secSelection))
-                                elif revealedBoxes[box_numX][box_numY] == None:
-                                    print('Player1走棋完成！第二次选择了%s' % 'None')
-                                    secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
-                                    print('Player1的secSelection: ' + str(secSelection))
-
-                                pieceVSpiece_info = game_fn.pieceVSpiece(displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces)
-                                pieceVSpiece_count = int(pieceVSpiece_info[0])
-                                mouse_clecked_count += pieceVSpiece_count
-                                all_pieces = pieceVSpiece_info[1]
-                                revealedBoxes = pieceVSpiece_info[2]
-                                player1_checked_count += 1
-                                bplayer = all_settings.player2_name
-                                if mouse_clecked_count % 2 != 0:
-                                    playerinfo['nowPlayer'] = all_settings.player2_name
-                                    bplayer = all_settings.player1_name
-                                else:
-                                    playerinfo['nowPlayer'] = all_settings.player1_name
-                                writestr = '%s|%d|%s|%s_%s|(%d, %d)|%s_%s|(%d, %d)' % \
-                                           (game_fn.getnowtime(), mouse_clecked_count, bplayer, firstSelection[2], firstSelection[3], firstSelection[0], firstSelection[1], secSelection[2], secSelection[3], secSelection[0], secSelection[1])
-                                game_fn.writeinfofile(filename, writestr)
-                                game_fn.writeinfofile(filename, str(all_pieces))
-                                game_fn.writeinfofile(filename, str(revealedBoxes))
-                                firstSelection = None
-                                secSelection = None
-                                haswon = game_fn.hasWon(displaySurf, revealedBoxes, all_pieces, playerinfo, fpsClock)
-                                if haswon[0] == True:
-                                    writestr = '%s    第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
-                                    writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1,)
-                                    game_fn.writeinfofile(filename, writestr)
-                                    game_fn.writeinfofile(filename, writestr1)
-                                    all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, playerinfo = game_fn.startGame(playerinfo)
-                elif nowPlayer == all_settings.player2_name:
-                    if piece_name_color == player2PieceColor:
-                        if mouse_clecked:
+                        if nowPlayer == all_settings.player2_name:
                             player2_checked_count += 1
-                            if player2_checked_count % 2 == 1:
-                                print('Player2走棋！选择了%s，当前第1次选择！允许选择！' % piece_name)
-                                firstSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
-                                print('Player2的firstSelection: ' + str(firstSelection))
-                            else:
-                                print('Player2走棋！选择了%s，当前第2次选择！取消选择！' % piece_name)
-                                firstSelection = None
-                                print('Player2的firstSelection: ' + str(firstSelection))
-                    else:
-                        if mouse_clecked:
-                            if firstSelection != None:
-                                if revealedBoxes[box_numX][box_numY] == True:
-                                    print('Player2走棋完成！第二次选择了%s' % piece_name)
-                                    secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
-                                    print('Player2的secSelection: ' + str(secSelection))
-                                elif revealedBoxes[box_numX][box_numY] == None:
-                                    print('Player2走棋完成！第二次选择了%s' % 'None')
-                                    secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
-                                    print('Player2的secSelection: ' + str(secSelection))
+                        if player1_checked_count % 2 == 1 or player2_checked_count % 2 == 1:
+                            print('%s走棋！选择了%s，当前第1次选择！允许选择！' % (nowPlayer, piece_name))
+                            firstSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
+                            print('%s的firstSelection: %s' % (nowPlayer, str(firstSelection)))
+                        else:
+                            print('%s走棋！选择了%s，当前第2次选择！取消选择！' % (nowPlayer, piece_name))
+                            firstSelection = None
+                            print('%s的firstSelection: %s' % (nowPlayer, str(firstSelection)))
+
+                if (nowPlayer == all_settings.player1_name and piece_name_color == player2PieceColor) or (nowPlayer == all_settings.player2_name and piece_name_color == player1PieceColor) or (nowPlayer == all_settings.player1_name and piece_name_color == None) or (nowPlayer == all_settings.player2_name and piece_name_color == None):
+                    if mouse_clecked:
+                        if firstSelection != None:
+                            if revealedBoxes[box_numX][box_numY] == True:
+                                print('%s走棋完成！第二次选择了%s' % (nowPlayer, piece_name))
+                                secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
+                                print('%s的secSelection: %s' % (nowPlayer, str(secSelection)))
+                            elif revealedBoxes[box_numX][box_numY] == None:
+                                print('%s走棋完成！第二次选择了%s' % (nowPlayer, 'None'))
+                                secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
+                                print('%s的secSelection: %s' % (nowPlayer, str(secSelection)))
+
+                            pieceVSpiece_info = game_fn.pieceVSpiece(displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces)
+                            pieceVSpiece_count = int(pieceVSpiece_info[0])
+                            mouse_clecked_count += pieceVSpiece_count
+                            all_pieces = pieceVSpiece_info[1]
+                            revealedBoxes = pieceVSpiece_info[2]
+                            if nowPlayer == all_settings.player1_name:
+                                player1_checked_count += 1
+                            if nowPlayer == all_settings.player2_name:
                                 player2_checked_count += 1
-                                pieceVSpiece_info = game_fn.pieceVSpiece(displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces)
-                                pieceVSpiece_count = int(pieceVSpiece_info[0])
-                                mouse_clecked_count += pieceVSpiece_count
-                                all_pieces = pieceVSpiece_info[1]
-                                revealedBoxes = pieceVSpiece_info[2]
-                                bplayer = all_settings.player2_name
-                                if mouse_clecked_count % 2 != 0:
-                                    playerinfo['nowPlayer'] = all_settings.player2_name
-                                    bplayer = all_settings.player1_name
-                                else:
-                                    playerinfo['nowPlayer'] = all_settings.player1_name
-                                writestr = '%s|%d|%s|%s_%s|(%d, %d)|%s_%s|(%d, %d)' % \
-                                           (game_fn.getnowtime(), mouse_clecked_count, bplayer, firstSelection[2], firstSelection[3], firstSelection[0], firstSelection[1], secSelection[2], secSelection[3], secSelection[0], secSelection[1])
+                            bplayer = all_settings.player2_name
+                            if mouse_clecked_count % 2 != 0:
+                                playerinfo['nowPlayer'] = all_settings.player2_name
+                                bplayer = all_settings.player1_name
+                            else:
+                                playerinfo['nowPlayer'] = all_settings.player1_name
+                            writestr = '%s|%d|%s|%s_%s|(%d, %d)|%s_%s|(%d, %d)' % \
+                                       (game_fn.getnowtime(), mouse_clecked_count, bplayer, firstSelection[2], firstSelection[3], firstSelection[0], firstSelection[1], secSelection[2], secSelection[3], secSelection[0], secSelection[1])
+                            game_fn.writeinfofile(filename, writestr)
+                            game_fn.writeinfofile(filename, str(all_pieces))
+                            game_fn.writeinfofile(filename, str(revealedBoxes))
+                            firstSelection = None
+                            secSelection = None
+                            haswon = game_fn.hasWon(displaySurf, revealedBoxes, all_pieces, playerinfo)
+                            if haswon[0] == True:
+                                writestr = '%s    第%d步：%s===>第%d局游戏结束！！！' % (
+                                game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
+                                writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1,)
                                 game_fn.writeinfofile(filename, writestr)
-                                game_fn.writeinfofile(filename, str(all_pieces))
-                                game_fn.writeinfofile(filename, str(revealedBoxes))
-                                firstSelection = None
-                                secSelection = None
-                                haswon = game_fn.hasWon(displaySurf, revealedBoxes, all_pieces, playerinfo, fpsClock)
-                                if haswon[0] == True:
-                                    writestr = '%s    第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
-                                    writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1,)
-                                    game_fn.writeinfofile(filename, writestr)
-                                    game_fn.writeinfofile(filename, writestr1)
-                                    all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, playerinfo = game_fn.startGame(playerinfo)
+                                game_fn.writeinfofile(filename, writestr1)
+                                all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, playerinfo = game_fn.startGame(playerinfo)
         pygame.display.update()
         fpsClock.tick(all_settings.FPS)
 
