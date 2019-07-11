@@ -339,6 +339,133 @@ class GameFunctions(object):
                                     print('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
                                     self.drawWon(displaySurf, playerinfo, '平局')
                                     return (True, '平局')
+                # 以下为2019-07-11增加的内容
+                elif redCount == 1 and blackCount > 1:
+                    redlist = []
+                    blacklist = []
+                    for x in range(8):
+                        for y in range(4):
+                            if revealedBoxes[x][y] == True:
+                                qz = all_pieces[x][y][0]
+                                qzlist = qz.split('_')
+                                qz_color = qzlist[0]
+                                qz_name = qzlist[1]
+                                if qz_color == 'red':
+                                    redlist.append(qz_name)
+                                else:
+                                    blacklist.append(qz_name)
+                    blacknamecount = 0
+                    if redlist[0] == 'shuai':
+                        for i in range(len(blacklist)):
+                            if blacklist[i] in ['shi1', 'shi2', 'xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2']:
+                                blacknamecount += 1
+                            else:
+                                break
+                        if blacknamecount == len(blacklist):
+                            return (True, '平局')
+                    elif redlist[0] in ['shi1', 'shi2']:
+                        for i in range(len(blacklist)):
+                            if blacklist[i] in ['xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2', 'zu1', 'zu2', 'zu3', 'zu4', 'zu5']:
+                                blacknamecount += 1
+                            else:
+                                break
+                        if blacknamecount == len(blacklist):
+                            return (True, '平局')
+                    elif redlist[0] in ['xiang1', 'xiang2']:
+                        for i in range(len(blacklist)):
+                            if blacklist[i] in ['ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2', 'zu1', 'zu2', 'zu3', 'zu4', 'zu5']:
+                                blacknamecount += 1
+                            else:
+                                break
+                        if blacknamecount == len(blacklist):
+                            return (True, '平局')
+                    elif redlist[0] in ['ma1', 'ma2']:
+                        for i in range(len(blacklist)):
+                            if blacklist[i] in ['ju1', 'ju2', 'pao1', 'pao2', 'zu1', 'zu2', 'zu3', 'zu4', 'zu5']:
+                                blacknamecount += 1
+                            else:
+                                break
+                        if blacknamecount == len(blacklist):
+                            return (True, '平局')
+                    elif redlist[0] in ['ju1', 'ju2']:
+                        for i in range(len(blacklist)):
+                            if blacklist[i] in ['pao1', 'pao2', 'zu1', 'zu2', 'zu3', 'zu4', 'zu5']:
+                                blacknamecount += 1
+                            else:
+                                break
+                        if blacknamecount == len(blacklist):
+                            return (True, '平局')
+                    elif redlist[0] in ['pao1', 'pao2']:
+                        for i in range(len(blacklist)):
+                            if blacklist[i] in ['zu1', 'zu2', 'zu3', 'zu4', 'zu5']:
+                                blacknamecount += 1
+                            else:
+                                break
+                        if blacknamecount == len(blacklist):
+                            return (True, '平局')
+                elif blackCount == 1 and redCount > 1:
+                    redlist = []
+                    blacklist = []
+                    for x in range(8):
+                        for y in range(4):
+                            if revealedBoxes[x][y] == True:
+                                qz = all_pieces[x][y][0]
+                                qzlist = qz.split('_')
+                                qz_color = qzlist[0]
+                                qz_name = qzlist[1]
+                                if qz_color == 'red':
+                                    redlist.append(qz_name)
+                                else:
+                                    blacklist.append(qz_name)
+                    rednamecount = 0
+                    if blacklist[0] == 'jiang':
+                        for i in range(len(redlist)):
+                            if redlist[i] in ['shi1', 'shi2', 'xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2']:
+                                rednamecount += 1
+                            else:
+                                break
+                        if rednamecount == len(redlist):
+                            return (True, '平局')
+                    elif blacklist[0] in ['shi1', 'shi2']:
+                        for i in range(len(redlist)):
+                            if redlist[i] in ['xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5']:
+                                rednamecount += 1
+                            else:
+                                break
+                        if rednamecount == len(redlist):
+                            return (True, '平局')
+                    elif blacklist[0] in ['xiang1', 'xiang2']:
+                        for i in range(len(redlist)):
+                            if redlist[i] in ['ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5']:
+                                rednamecount += 1
+                            else:
+                                break
+                        if rednamecount == len(redlist):
+                            return (True, '平局')
+                    elif blacklist[0] in ['ma1', 'ma2']:
+                        for i in range(len(redlist)):
+                            if redlist[i] in ['ju1', 'ju2', 'pao1', 'pao2', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5']:
+                                rednamecount += 1
+                            else:
+                                break
+                        if rednamecount == len(redlist):
+                            return (True, '平局')
+                    elif blacklist[0] in ['ju1', 'ju2']:
+                        for i in range(len(redlist)):
+                            if redlist[i] in ['pao1', 'pao2', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5']:
+                                rednamecount += 1
+                            else:
+                                break
+                        if rednamecount == len(redlist):
+                            return (True, '平局')
+                    elif blacklist[0] in ['pao1', 'pao2']:
+                        for i in range(len(redlist)):
+                            if redlist[i] in ['bing1', 'bing2', 'bing3', 'bing4', 'bing5']:
+                                rednamecount += 1
+                            else:
+                                break
+                        if rednamecount == len(redlist):
+                            return (True, '平局')
         return(False, '')
 
     def player1Won(self, totalCount, wonCount, playerinfo):

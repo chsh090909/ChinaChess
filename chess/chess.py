@@ -30,8 +30,8 @@ def main():
     all_pieces = game_fn.getRandomAllPieces()
     revealedBoxes = game_fn.getPiecesStatus(False)
 
-    # all_pieces = [[[None, None], [None, None], ['red_pao2', 'images/pieces_front_red_pao2.png'], [None, None]], [[None, None], ['red_ju2', 'images/pieces_front_red_ju2.png'], [None, None], ['black_shi2', 'images/pieces_front_black_shi2.png']], [[None, None], [None, None], [None, None], [None, None]], [[None, None], ['red_shi1', 'images/pieces_front_red_shi1.png'], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [['black_ju1', 'images/pieces_front_black_ju1.png'], ['black_pao2', 'images/pieces_front_black_pao2.png'], ['black_xiang1', 'images/pieces_front_black_xiang1.png'], ['black_ju2', 'images/pieces_front_black_ju2.png']], [['black_zu5', 'images/pieces_front_black_zu5.png'], ['red_xiang2', 'images/pieces_front_red_xiang2.png'], [None, None], [None, None]], [['red_ma2', 'images/pieces_front_red_ma2.png'], ['black_jiang', 'images/pieces_front_black_jiang.png'], ['black_xiang2', 'images/pieces_front_black_xiang2.png'], ['black_ma2', 'images/pieces_front_black_ma2.png']]]
-    # revealedBoxes = [[None, None, True, None], [None, False, None, True], [None, None, None, None], [None, False, None, None], [None, None, None, None], [True, False, True, True], [False, False, None, None], [True, False, True, True]]
+    # all_pieces = [[[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [['black_shi2', 'images/pieces_front_black_shi2.png'], [None, None], [None, None], [None, None]], [['red_bing4', 'images/pieces_front_red_bing4.png'], [None, None], [None, None], ['red_shuai', 'images/pieces_front_red_shuai.png']], [['black_ju2', 'images/pieces_front_black_ju2.png'], ['black_ma2', 'images/pieces_front_black_ma2.png'], ['black_zu4', 'images/pieces_front_black_zu4.png'], [None, None]], [[None, None], [None, None], [None, None], [None, None]]]
+    # revealedBoxes = [[None, None, None, None], [None, None, None, None], [None, None, None, None], [None, None, None, None], [True, None, None, None], [True, None, None, True], [True, True, True, None], [None, None, None, None]]
     # 这里有多个棋子
     # all_pieces = [[[None, None], ['red_shuai', 'images/pieces_front_red_shuai.png'], [None, None], ['black_xiang1', 'images/pieces_front_black_xiang1.png']], [[None, None], [None, None], ['red_xiang2', 'images/pieces_front_red_xiang2.png'], ['red_bing5', 'images/pieces_front_red_bing5.png']], [[None, None], ['black_ma2', 'images/pieces_front_black_ma2.png'], [None, None], [None, None]], [[None, None], [None, None], [None, None], ['red_ma1', 'images/pieces_front_red_ma1.png']], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], ['red_xiang1', 'images/pieces_front_red_xiang1.png'], [None, None], [None, None]], [[None, None], [None, None], ['red_ma2', 'images/pieces_front_red_ma2.png'], ['red_bing2', 'images/pieces_front_red_bing2.png']]]
     # revealedBoxes = [[None, True, None, True], [None, None, True, True], [None, True, None, None], [None, None, None, True], [None, None, None, None], [None, None, None, None], [None, True, None, None], [None, None, True, True]]
@@ -94,6 +94,7 @@ def main():
                 mouse_clecked = True
             if event.type  == KEYUP and event.key == K_b:
                 # 用户按下键盘字母b键，处理用户悔棋功能
+                # 以下为2019-07-04完成的内容
                 if mouse_clecked_count == 0:
                     break
                 else:
@@ -163,7 +164,7 @@ def main():
                     piece_name_color = None
                     piece_name_name = None
                 # print('当前%s走棋！' % nowPlayer)
-
+                # 以下为2019-07-09优化的内容
                 if (nowPlayer == all_settings.player1_name and piece_name_color == player1PieceColor) or (nowPlayer == all_settings.player2_name and piece_name_color == player2PieceColor):
                     if mouse_clecked:
                         if nowPlayer == all_settings.player1_name:
@@ -215,9 +216,8 @@ def main():
                             secSelection = None
                             haswon = game_fn.hasWon(displaySurf, revealedBoxes, all_pieces, playerinfo)
                             if haswon[0] == True:
-                                writestr = '%s    第%d步：%s===>第%d局游戏结束！！！' % (
-                                game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
-                                writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1,)
+                                writestr = '%s    第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
+                                writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1)
                                 game_fn.writeinfofile(filename, writestr)
                                 game_fn.writeinfofile(filename, writestr1)
                                 all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, playerinfo = game_fn.startGame(playerinfo)
