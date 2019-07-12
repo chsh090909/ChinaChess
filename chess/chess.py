@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import pygame, sys, datetime
+import pygame, sys, datetime, random
 from pygame.locals import *
 from settings import Settings
 from game_functions import GameFunctions
@@ -12,9 +12,17 @@ def main():
     fpsClock = pygame.time.Clock()
 
     pygame.init()
+    pygame.mixer.init()
+    # 初始化画布
     displaySurf = pygame.display.set_mode((all_settings.screen_width, all_settings.screen_height))
     pygame.display.set_caption(all_settings.game_title)
     displaySurf.fill(all_settings.bg_color)
+    # 加载背景音乐随机播放
+    bgmusiclist = all_settings.bgmusiclist
+    bgmusic = random.sample(bgmusiclist, 1)
+    pygame.mixer.music.load('mids/%s' % bgmusic[0])
+    pygame.mixer.music.play()
+    print("播放背景音乐： %s" % bgmusic[0])
 
     mouse_x = 0
     mouse_y = 0
@@ -56,10 +64,15 @@ def main():
 
     while True:
         mouse_clecked = False
-
+        # 加载画布信息
         displaySurf.fill(all_settings.bg_color)
         game_fn.drawBoard(displaySurf, box_x, box_y, revealedBoxes, playerinfo, all_pieces, firstSelection=firstSelection)
-
+        # 加载背景音乐
+        if pygame.mixer.music.get_busy() == False:
+            bgmusic = random.sample(bgmusiclist, 1)
+            pygame.mixer.music.load('mids/%s' % bgmusic[0])
+            pygame.mixer.music.play()
+            print("更新播放背景音乐： %s" % bgmusic[0])
         for event in pygame.event.get():  # event handling loop
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 # 用户点击关闭程序，或者按下键盘的esc键，程序退出
@@ -85,6 +98,8 @@ def main():
                         gameoverstr += "，打平%d局" % tiecount
                 gameoverstr += "*" * 20
                 game_fn.writeinfofile(filename, gameoverstr)
+                pygame.mixer.music.fadeout(1000)
+                pygame.mixer.quit()
                 pygame.quit()
                 sys.exit()
             if event.type == MOUSEMOTION:
@@ -118,7 +133,9 @@ def main():
                     # 将新的linelist重新写入info文件
                     game_fn.writeinfofilerewrite(filename, linelist)
                     print("重写info文件成功！！")
-                pass
+                    # 加载悔棋的音效
+                    soundobj = pygame.mixer.Sound(all_settings.hq)
+                    soundobj.play()
 
         box_x, box_y = game_fn.getBoxXY(mouse_x, mouse_y)
         if box_x != None and box_y != None:
@@ -129,6 +146,9 @@ def main():
                 if mouse_clecked:
                     # 选择了没有翻开的棋子，就打开棋子的内容并展示出来
                     revealedBoxes[box_numX][box_numY] = True
+                    # 加载走棋完成的音效
+                    soundobj = pygame.mixer.Sound(all_settings.zqwc)
+                    soundobj.play()
                     piece_name = all_pieces[box_numX][box_numY][0]
                     mouse_clecked_count += 1
                     piecelist = piece_name.split('_')
@@ -172,10 +192,16 @@ def main():
                         if nowPlayer == all_settings.player2_name:
                             player2_checked_count += 1
                         if player1_checked_count % 2 == 1 or player2_checked_count % 2 == 1:
+                            # 加载选中棋子的音效
+                            soundobj = pygame.mixer.Sound(all_settings.xz)
+                            soundobj.play()
                             print('%s走棋！选择了%s，当前第1次选择！允许选择！' % (nowPlayer, piece_name))
                             firstSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
                             print('%s的firstSelection: %s' % (nowPlayer, str(firstSelection)))
                         else:
+                            # 加载走棋完成的音效
+                            soundobj = pygame.mixer.Sound(all_settings.zqwc)
+                            soundobj.play()
                             print('%s走棋！选择了%s，当前第2次选择！取消选择！' % (nowPlayer, piece_name))
                             firstSelection = None
                             print('%s的firstSelection: %s' % (nowPlayer, str(firstSelection)))
@@ -184,10 +210,16 @@ def main():
                     if mouse_clecked:
                         if firstSelection != None:
                             if revealedBoxes[box_numX][box_numY] == True:
+                                # 加载吃棋子的音效
+                                soundobj = pygame.mixer.Sound(all_settings.cq)
+                                soundobj.play()
                                 print('%s走棋完成！第二次选择了%s' % (nowPlayer, piece_name))
                                 secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
                                 print('%s的secSelection: %s' % (nowPlayer, str(secSelection)))
                             elif revealedBoxes[box_numX][box_numY] == None:
+                                # 加载走棋完成的音效
+                                soundobj = pygame.mixer.Sound(all_settings.zqwc)
+                                soundobj.play()
                                 print('%s走棋完成！第二次选择了%s' % (nowPlayer, 'None'))
                                 secSelection = (box_numX, box_numY, piece_name_color, piece_name_name, piece_image_url)
                                 print('%s的secSelection: %s' % (nowPlayer, str(secSelection)))
