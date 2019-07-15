@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import logging
+
 class Settings(object):
     """
     配置文档
@@ -54,9 +56,14 @@ class Settings(object):
         self.wonimage = 'images/win.gif'
         self.font_win_size = 50
         #设置走棋步骤记录的文件名称
-        self.filename = 'logs/chess.info'
+        self.infofilename = 'logs/chess.info'
         #设置日志文件记录位置和名称
-        self.logsname = 'logs/chess_logs.log'
+        self.logfilename = 'logs/chess_log.log'
+        #设置日志记录的格式、日志等级等信息
+        self.sysoutformat = '%(name)s:%(funcName)s() - %(levelname)s --> %(message)s'
+        self.filewriteformat = '%(asctime)s - %(name)s:%(funcName)s() - %(levelname)s --> %(message)s'
+        self.sysoutlevel = logging.DEBUG
+        self.filewritelevel = logging.INFO
         #设置文件的游戏开头语
         self.beginstr = "本轮游戏开始！！！当前第1局！"
         #设置文件的游戏结束语(总结游戏内容)
