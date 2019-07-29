@@ -109,7 +109,7 @@ class GameFunctions(object):
             # GameFunctions.__logger.error('Error', exc_info = True)
 
     def loadPiecesBack(self, displaySurf, box_x, box_y, revealedBoxes, all_pieces, **kwargs):
-        #加载棋子背面的图片，以及鼠标悬停的选中效果
+        # 加载棋子背面的图片，以及鼠标悬停的选中效果
         try:
             for x in range(8):
                 for y in range(4):
@@ -612,7 +612,7 @@ class GameFunctions(object):
                         image = pygame.transform.smoothscale(image, (self.all_settings.pieces_size, self.all_settings.pieces_size))
                         if fs_y == ss_y and int(fabs(ss_x - fs_x)) > 1:
                             #横排比较
-                            beginmove_x = fs_x * 100 + 78
+                            beginmove_x = fs_x * 100 + self.all_settings.piece_first_x
                             count_num = 0
                             increment = 1
                             if ss_x < fs_x:
@@ -640,7 +640,7 @@ class GameFunctions(object):
                                     pieceMoveCount += 1
                         if fs_x == ss_x and int(fabs(ss_y - fs_y)) > 1:
                             #竖排比较
-                            beginmove_y = fs_y * 100 + 42
+                            beginmove_y = fs_y * 100 + self.all_settings.piece_first_y
                             count_num = 0
                             increment = 1
                             if ss_y < fs_y:
@@ -675,7 +675,7 @@ class GameFunctions(object):
                         image = pygame.image.load(firstSelection[4]).convert_alpha()
                         image = pygame.transform.smoothscale(image, (self.all_settings.pieces_size, self.all_settings.pieces_size))
                         if fs_y == ss_y and int(fabs(ss_x - fs_x)) == 1:
-                            beginmove_x = fs_x * 100 + 78
+                            beginmove_x = fs_x * 100 + self.all_settings.piece_first_x
                             if firstSelection[3] in ['jiang', 'shuai']:
                                 pieceMoveCount = self.pieceVSpieceMoveX(['jiang', 'shuai'],
                                                                         ['shi1', 'shi2', 'xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2'],
@@ -702,7 +702,7 @@ class GameFunctions(object):
                                                                         ['jiang', 'shuai'],
                                                                         displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces, beginmove_x, image)
                         if fs_x == ss_x and int(fabs(ss_y - fs_y)) == 1:
-                            beginmove_y = fs_y * 100 + 42
+                            beginmove_y = fs_y * 100 + self.all_settings.piece_first_y
                             if firstSelection[3] in ['jiang', 'shuai']:
                                 pieceMoveCount = self.pieceVSpieceMoveY(['jiang', 'shuai'],
                                                                         ['shi1', 'shi2', 'xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2'],
@@ -734,13 +734,13 @@ class GameFunctions(object):
                 image = pygame.image.load(firstSelection[4]).convert_alpha()
                 image = pygame.transform.smoothscale(image, (self.all_settings.pieces_size, self.all_settings.pieces_size))
                 if fs_y == ss_y and int(fabs(ss_x - fs_x)) == 1:
-                    beginmove_x = fs_x * 100 + 78
+                    beginmove_x = fs_x * 100 + self.all_settings.piece_first_x
                     pieceMoveCount = self.pieceVSpieceMoveX(['jiang', 'shuai', 'shi1', 'shi2', 'xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2',
                                             'zu1', 'zu2', 'zu3', 'zu4', 'zu5', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5'],
                                             [None],displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces, beginmove_x, image)
                     revealedBoxes[ss_x][ss_y] = True
                 if fs_x == ss_x and int(fabs(ss_y - fs_y)) == 1:
-                    beginmove_y = fs_y * 100 + 42
+                    beginmove_y = fs_y * 100 + self.all_settings.piece_first_y
                     pieceMoveCount = self.pieceVSpieceMoveY(['jiang', 'shuai', 'shi1', 'shi2', 'xiang1', 'xiang2', 'ma1', 'ma2', 'ju1', 'ju2', 'pao1', 'pao2',
                                             'zu1', 'zu2', 'zu3', 'zu4', 'zu5', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5'],
                                             [None], displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces, beginmove_y, image)

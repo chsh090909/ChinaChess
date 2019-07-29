@@ -6,9 +6,10 @@ from pygame.locals import *
 from settings import Settings
 from game_functions import GameFunctions
 
+all_settings = Settings()
+
 def main():
     try:
-        all_settings = Settings()
         game_fn = GameFunctions(all_settings)
         fpsClock = pygame.time.Clock()
         # 定义日志
@@ -50,7 +51,7 @@ def main():
         mouse_y = 0
         playerinfo = {
             'nowPlayer': all_settings.player1_name,
-            # 'pieceColor': 'red',
+            # 'pieceColor': 'black',
             'pieceColor': 'None',
             'totalCount': 0,
             'wonCount': 0,
@@ -81,7 +82,7 @@ def main():
         game_fn.writeinfofile(infofilename, beginstr)
         game_fn.writeinfofile(infofilename, writestr)
         game_fn.writeinfofile(infofilename, str(all_pieces))
-        game_fn.writeinfofile(infofilename ,str(revealedBoxes))
+        game_fn.writeinfofile(infofilename, str(revealedBoxes))
 
         while True:
             mouse_clecked = False
@@ -94,8 +95,8 @@ def main():
                 pygame.mixer.music.load('mids/%s' % bgmusic[0])
                 pygame.mixer.music.play()
                 logger.info("更新播放背景音乐： %s" % bgmusic[0])
-            for event in pygame.event.get():  # event handling loop
-                if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
+            for events in pygame.event.get():  # event handling loop
+                if events.type == QUIT or (events.type == KEYUP and events.key == K_ESCAPE):
                     # 用户点击关闭程序，或者按下键盘的esc键，程序退出
                     # 退出系统之前记录本轮游戏的结果
                     endtime = datetime.datetime.now()
@@ -123,12 +124,12 @@ def main():
                     pygame.mixer.quit()
                     pygame.quit()
                     sys.exit()
-                if event.type == MOUSEMOTION:
-                    mouse_x, mouse_y = event.pos
-                if event.type == MOUSEBUTTONUP:
-                    mouse_x, mouse_y = event.pos
+                if events.type == MOUSEMOTION:
+                    mouse_x, mouse_y = events.pos
+                if events.type == MOUSEBUTTONUP:
+                    mouse_x, mouse_y = events.pos
                     mouse_clecked = True
-                if event.type  == KEYUP and event.key == K_b:
+                if events.type  == KEYUP and events.key == K_b:
                     # 用户按下键盘字母b键，处理用户悔棋功能
                     # 以下为2019-07-04完成的内容
                     if mouse_clecked_count == 0:
@@ -266,7 +267,7 @@ def main():
                                 secSelection = None
                                 haswon = game_fn.hasWon(displaySurf, revealedBoxes, all_pieces, playerinfo)
                                 if haswon[0] == True:
-                                    writestr = '%s    第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
+                                    writestr = '%s 第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
                                     writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1)
                                     game_fn.writeinfofile(infofilename, writestr)
                                     game_fn.writeinfofile(infofilename, writestr1)
