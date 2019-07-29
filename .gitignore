@@ -105,3 +105,4 @@ venv.bak/
 
 # myfile
 .idea/
+.DS_Store
