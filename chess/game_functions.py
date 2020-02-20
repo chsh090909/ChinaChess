@@ -56,13 +56,13 @@ class GameFunctions(object):
         displaySurf.blit(piece_board, self.all_settings.chess_board_localxy)
 
     @catch_exception
-    def loadPlayerMain(self, displaySurf, playerinfo):
+    def loadPlayerMain(self, displaySurf, play_info):
         # 加载玩家信息模块内容
-        nowPlayer = playerinfo['nowPlayer']
-        pieceColor = playerinfo['pieceColor']
-        totalCount = playerinfo['totalCount']
-        wonCount = playerinfo['wonCount']
-        tieCount = playerinfo['tieCount']
+        nowPlayer = play_info['nowPlayer']
+        pieceColor = play_info['pieceColor']
+        totalCount = play_info['totalCount']
+        wonCount = play_info['wonCount']
+        tieCount = play_info['tieCount']
 
         pygame.draw.rect(displaySurf, self.all_settings.RED, (0, 520, self.all_settings.screen_width, 1), 1)
         pygame.draw.rect(displaySurf, self.all_settings.RED, (499, 520, 1, self.all_settings.screen_height - 520), 1)
@@ -185,20 +185,20 @@ class GameFunctions(object):
         return (box_x, box_y)
 
     @catch_exception
-    def startGame(self, playerinfo):
+    def startGame(self, play_info):
         # 游戏开始时加载的内容
         all_pieces = self.getRandomAllPieces()
         revealedBoxes = self.getPiecesStatus(False)
         mouse_clecked_count = 0
         player1_checked_count = 0
         player2_checked_count = 0
-        playerinfo['nowPlayer'] = self.all_settings.player1_name
-        playerinfo['pieceColor'] = 'None'
+        play_info['nowPlayer'] = self.all_settings.player1_name
+        play_info['pieceColor'] = 'None'
         GameFunctions.__logger.info('startGame==>GameOver！游戏重置！')
-        return (all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, playerinfo)
+        return (all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, play_info)
 
     @catch_exception
-    def hasWon(self, displaySurf, revealedBoxes, all_pieces, playerinfo):
+    def hasWon(self, displaySurf, revealedBoxes, all_pieces, play_info):
         # 判断游戏结束条件：
         # 全部为一方颜色的棋子，为胜利
         # 棋盘全部清空或者留下不能相互吃掉的棋子，为平局
@@ -207,9 +207,9 @@ class GameFunctions(object):
         blackCount = 0
         falseCount = 0
 
-        totalCount = playerinfo['totalCount']
-        wonCount = playerinfo['wonCount']
-        tieCount = playerinfo['tieCount']
+        totalCount = play_info['totalCount']
+        wonCount = play_info['wonCount']
+        tieCount = play_info['tieCount']
 
         for x in range(8):
             for y in range(4):
@@ -232,37 +232,37 @@ class GameFunctions(object):
         GameFunctions.__logger.info('hasWon==>falseCount: %d' % falseCount)
         GameFunctions.__logger.info('======================================================')
         if noneCount == 32:
-            self.tieWon(totalCount, tieCount, playerinfo)
-            GameFunctions.__logger.info('hasWon==>noneCount == 32==>playerinfo: %s' % playerinfo)
-            self.drawWon(displaySurf, playerinfo, '平局')
+            self.tieWon(totalCount, tieCount, play_info)
+            GameFunctions.__logger.info('hasWon==>noneCount == 32==>play_info: %s' % play_info)
+            self.drawWon(displaySurf, play_info, '平局')
             return (True, '平局')
         elif falseCount == 0:
             if noneCount != 32:
                 if redCount == 0:
-                    if 'red' == playerinfo['pieceColor']:
-                        # playerinfo['wonPlayer'] = self.all_settings.player2_name
-                        self.player2Won(totalCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>redCount == 0(red == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
-                        self.drawWon(displaySurf, playerinfo, self.all_settings.player2_name + '胜')
+                    if 'red' == play_info['pieceColor']:
+                        # play_info['wonPlayer'] = self.all_settings.player2_name
+                        self.player2Won(totalCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>redCount == 0(red == play_info[pieceColor])==>play_info: %s' % play_info)
+                        self.drawWon(displaySurf, play_info, self.all_settings.player2_name + '胜')
                         return (True, self.all_settings.player2_name + '(黑方)胜')
-                    elif 'black' == playerinfo['pieceColor']:
-                        # playerinfo['wonPlayer'] = self.all_settings.player1_name
-                        self.player1Won(totalCount, wonCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>redCount == 0(black == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
-                        self.drawWon(displaySurf, playerinfo, self.all_settings.player1_name + '胜')
+                    elif 'black' == play_info['pieceColor']:
+                        # play_info['wonPlayer'] = self.all_settings.player1_name
+                        self.player1Won(totalCount, wonCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>redCount == 0(black == play_info[pieceColor])==>play_info: %s' % play_info)
+                        self.drawWon(displaySurf, play_info, self.all_settings.player1_name + '胜')
                         return (True, self.all_settings.player1_name + '(黑方)胜')
                 elif blackCount == 0:
-                    if 'red' == playerinfo['pieceColor']:
-                        # playerinfo['wonPlayer'] = self.all_settings.player1_name
-                        self.player1Won(totalCount, wonCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>blackCount == 0(red == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
-                        self.drawWon(displaySurf, playerinfo, self.all_settings.player1_name + '胜')
+                    if 'red' == play_info['pieceColor']:
+                        # play_info['wonPlayer'] = self.all_settings.player1_name
+                        self.player1Won(totalCount, wonCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>blackCount == 0(red == play_info[pieceColor])==>play_info: %s' % play_info)
+                        self.drawWon(displaySurf, play_info, self.all_settings.player1_name + '胜')
                         return (True, self.all_settings.player1_name + '(红方)胜')
-                    elif 'black' == playerinfo['pieceColor']:
-                        # playerinfo['wonPlayer'] = self.all_settings.player2_name
-                        self.player2Won(totalCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>blackCount == 0(black == playerinfo[pieceColor])==>playerinfo: %s' % playerinfo)
-                        self.drawWon(displaySurf, playerinfo, self.all_settings.player2_name + '胜')
+                    elif 'black' == play_info['pieceColor']:
+                        # play_info['wonPlayer'] = self.all_settings.player2_name
+                        self.player2Won(totalCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>blackCount == 0(black == play_info[pieceColor])==>play_info: %s' % play_info)
+                        self.drawWon(displaySurf, play_info, self.all_settings.player2_name + '胜')
                         return (True, self.all_settings.player2_name + '(红方)胜')
                 elif redCount == 1 and blackCount == 1:
                     newlist = []
@@ -277,29 +277,29 @@ class GameFunctions(object):
                     list2_color = list2.split('_')[0]
                     list2_name = list2.split('_')[1]
                     if (list1_color == 'red' and list1_name == 'shuai') and (list2_color == 'black' and list2_name in ['jiang', 'pao1', 'pao2']):
-                        self.tieWon(totalCount, tieCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                        self.drawWon(displaySurf, playerinfo, '平局')
+                        self.tieWon(totalCount, tieCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                        self.drawWon(displaySurf, play_info, '平局')
                         return (True, '平局')
                     elif (list1_color == 'black' and list1_name == 'jiang') and (list2_color == 'red' and list2_name in ['shuai', 'pao1', 'pao2']):
-                        self.tieWon(totalCount, tieCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                        self.drawWon(displaySurf, playerinfo, '平局')
+                        self.tieWon(totalCount, tieCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                        self.drawWon(displaySurf, play_info, '平局')
                         return (True, '平局')
                     elif (list1_color == 'red' and list1_name in ['pao1', 'pao2']) and (list2_color == 'black' and list2_name in ['pao1', 'pao2', 'zu1', 'zu2', 'zu3', 'zu4', 'zu5']):
-                        self.tieWon(totalCount, tieCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                        self.drawWon(displaySurf, playerinfo, '平局')
+                        self.tieWon(totalCount, tieCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                        self.drawWon(displaySurf, play_info, '平局')
                         return (True, '平局')
                     elif (list1_color == 'black' and list1_name in ['pao1', 'pao2']) and (list2_color == 'red' and list2_name in ['pao1', 'pao2', 'bing1', 'bing2', 'bing3', 'bing4', 'bing5']):
-                        self.tieWon(totalCount, tieCount, playerinfo)
-                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                        self.drawWon(displaySurf, playerinfo, '平局')
+                        self.tieWon(totalCount, tieCount, play_info)
+                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                        self.drawWon(displaySurf, play_info, '平局')
                         return (True, '平局')
                     else:
                         if fabs(newlist[0][0] - newlist[1][0]) == 1 and fabs(newlist[0][1] - newlist[1][1]) == 1:
-                            nowPlayer = playerinfo['nowPlayer']
-                            player1PieceColor = playerinfo['pieceColor']
+                            nowPlayer = play_info['nowPlayer']
+                            player1PieceColor = play_info['pieceColor']
                             player2PieceColor = 'red' if player1PieceColor == 'black' else 'black'
                             red_index = black_index = -1
                             if list1_color == 'red':
@@ -325,46 +325,46 @@ class GameFunctions(object):
                             if red_index < black_index:
                                 if black_index in [11, 12, 13, 14, 15] and red_index == 0:
                                     if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
-                                        self.tieWon(totalCount, tieCount, playerinfo)
-                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                        self.drawWon(displaySurf, playerinfo, '平局')
+                                        self.tieWon(totalCount, tieCount, play_info)
+                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                        self.drawWon(displaySurf, play_info, '平局')
                                         return (True, '平局')
                                     elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'black':
-                                        self.tieWon(totalCount, tieCount, playerinfo)
-                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                        self.drawWon(displaySurf, playerinfo, '平局')
+                                        self.tieWon(totalCount, tieCount, play_info)
+                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                        self.drawWon(displaySurf, play_info, '平局')
                                         return (True, '平局')
                                 elif nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
-                                    self.tieWon(totalCount, tieCount, playerinfo)
-                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                    self.drawWon(displaySurf, playerinfo, '平局')
+                                    self.tieWon(totalCount, tieCount, play_info)
+                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                    self.drawWon(displaySurf, play_info, '平局')
                                     return (True, '平局')
                                 elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'red':
-                                    self.tieWon(totalCount, tieCount, playerinfo)
-                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                    self.drawWon(displaySurf, playerinfo, '平局')
+                                    self.tieWon(totalCount, tieCount, play_info)
+                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                    self.drawWon(displaySurf, play_info, '平局')
                                     return (True, '平局')
                             elif red_index > black_index:
                                 if red_index in [11, 12, 13, 14, 15] and black_index == 0:
                                     if nowPlayer == self.all_settings.player1_name and player1PieceColor == 'red':
-                                        self.tieWon(totalCount, tieCount, playerinfo)
-                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                        self.drawWon(displaySurf, playerinfo, '平局')
+                                        self.tieWon(totalCount, tieCount, play_info)
+                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                        self.drawWon(displaySurf, play_info, '平局')
                                         return (True, '平局')
                                     elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'red':
-                                        self.tieWon(totalCount, tieCount, playerinfo)
-                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                        self.drawWon(displaySurf, playerinfo, '平局')
+                                        self.tieWon(totalCount, tieCount, play_info)
+                                        GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                        self.drawWon(displaySurf, play_info, '平局')
                                         return (True, '平局')
                                 elif nowPlayer == self.all_settings.player1_name and player1PieceColor == 'black':
-                                    self.tieWon(totalCount, tieCount, playerinfo)
-                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                    self.drawWon(displaySurf, playerinfo, '平局')
+                                    self.tieWon(totalCount, tieCount, play_info)
+                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                    self.drawWon(displaySurf, play_info, '平局')
                                     return (True, '平局')
                                 elif nowPlayer == self.all_settings.player2_name and player2PieceColor == 'black':
-                                    self.tieWon(totalCount, tieCount, playerinfo)
-                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>playerinfo: %s' % (list1, list2, playerinfo))
-                                    self.drawWon(displaySurf, playerinfo, '平局')
+                                    self.tieWon(totalCount, tieCount, play_info)
+                                    GameFunctions.__logger.info('hasWon==>red == %s and black == %s ==>play_info: %s' % (list1, list2, play_info))
+                                    self.drawWon(displaySurf, play_info, '平局')
                                     return (True, '平局')
                 # 以下为2019-07-11增加的内容
                 elif redCount == 1 and blackCount > 1:
@@ -495,26 +495,26 @@ class GameFunctions(object):
                             return (True, '平局')
         return(False, '')
 
-    def player1Won(self, totalCount, wonCount, playerinfo):
+    def player1Won(self, totalCount, wonCount, play_info):
         totalCount += 1
         wonCount += 1
-        playerinfo['totalCount'] = totalCount
-        playerinfo['wonCount'] = wonCount
-        GameFunctions.__logger.info('playerinfo[wonPlayer] = self.all_settings.player1_name')
+        play_info['totalCount'] = totalCount
+        play_info['wonCount'] = wonCount
+        GameFunctions.__logger.info('play_info[wonPlayer] = self.all_settings.player1_name')
 
-    def player2Won(self, totalCount, playerinfo):
+    def player2Won(self, totalCount, play_info):
         totalCount += 1
-        playerinfo['totalCount'] = totalCount
-        GameFunctions.__logger.info('playerinfo[wonPlayer] = self.all_settings.player2_name')
+        play_info['totalCount'] = totalCount
+        GameFunctions.__logger.info('play_info[wonPlayer] = self.all_settings.player2_name')
 
-    def tieWon(self, totalCount, tieCount, playerinfo):
+    def tieWon(self, totalCount, tieCount, play_info):
         totalCount += 1
         tieCount += 1
-        playerinfo['totalCount'] = totalCount
-        playerinfo['tieCount'] = tieCount
+        play_info['totalCount'] = totalCount
+        play_info['tieCount'] = tieCount
 
     @catch_exception
-    def drawWon(self, displaySurf, playerinfo, wonPlayer):
+    def drawWon(self, displaySurf, play_info, wonPlayer):
         # 当一轮游戏结束后加载游戏胜负动画和消息内容
         wonimage = pygame.image.load(self.all_settings.wonimage).convert_alpha()
         # image_back = pygame.transform.smoothscale(wonimage, (self.all_settings.pieces_size, self.all_settings.pieces_size))
@@ -531,16 +531,16 @@ class GameFunctions(object):
             if i >= 5:
                 font_str_status = font_str.render(str(10 - i) + '秒之后开始下一局！', True, self.all_settings.GRAY)
                 displaySurf.blit(font_str_status, (400, 340))
-            self.loadPlayerMain(displaySurf, playerinfo)
+            self.loadPlayerMain(displaySurf, play_info)
 
             pygame.display.update()
             pygame.time.wait(1000)
 
-    def drawBoard(self, displaySurf, box_x, box_y, revealedBoxes, playerinfo, all_pieces, **kwargs):
+    def drawBoard(self, displaySurf, box_x, box_y, revealedBoxes, play_info, all_pieces, **kwargs):
         # 加载初始化画布内容，包括棋盘和玩家参数信息等
         self.loadPieceBoard(displaySurf)
         self.loadPiecesBack(displaySurf, box_x, box_y, revealedBoxes, all_pieces, **kwargs)
-        self.loadPlayerMain(displaySurf, playerinfo)
+        self.loadPlayerMain(displaySurf, play_info)
 
     def pieceVSpiece(self, displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces):
         # 核心部分：两个棋子之间互相比较

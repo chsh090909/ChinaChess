@@ -41,6 +41,8 @@ def main():
         pygame.display.set_caption(all_settings.game_title)
         displaySurf.fill(all_settings.bg_color)
         # 加载背景音乐随机播放
+        music_play_flag = True
+        keyboard_p = 0
         bgmusiclist = all_settings.bgmusiclist
         bgmusic = random.sample(bgmusiclist, 1)
         pygame.mixer.music.load('mids/%s' % bgmusic[0])
@@ -69,16 +71,16 @@ def main():
         # 这里只有两个棋子做比较
         # all_pieces = [[[None, None], [None, None], [None, None], ['black_zu1', 'images/pieces_front_black_zu1.png']], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]], [[None, None], ['red_xiang1', 'images/pieces_front_red_xiang1.png'], [None, None], [None, None]], [[None, None], [None, None], [None, None], [None, None]]]
         # revealedBoxes = [[None, None, None, True], [None, None, None, None], [None, None, None, None], [None, None, None, None], [None, None, None, None], [None, None, None, None], [None, True, None, None], [None, None, None, None]]
-        global firstSelection, secSelection, mouse_clecked_count
+        global firstSelection, secSelection, mouse_clicked_count
         firstSelection = None
         secSelection = None
-        mouse_clecked_count = 0
+        mouse_clicked_count = 0
         player1_checked_count = 0
         player2_checked_count = 0
         # 游戏开始，写入游戏开始信息
         begintime = datetime.datetime.now()
         beginstr = "*" * 20 + all_settings.beginstr + "*" * 20
-        writestr = '%s|%d|%s|%s|(%d, %d)' % (game_fn.getnowtime(), mouse_clecked_count, playerinfo['nowPlayer'], 'None_None', -1, -1)
+        writestr = '%s|%d|%s|%s|(%d, %d)' % (game_fn.getnowtime(), mouse_clicked_count, playerinfo['nowPlayer'], 'None_None', -1, -1)
         game_fn.writeinfofile(infofilename, beginstr)
         game_fn.writeinfofile(infofilename, writestr)
         game_fn.writeinfofile(infofilename, str(all_pieces))
@@ -91,10 +93,11 @@ def main():
             game_fn.drawBoard(displaySurf, box_x, box_y, revealedBoxes, playerinfo, all_pieces, firstSelection=firstSelection)
             # 加载背景音乐
             if pygame.mixer.music.get_busy() == False:
-                bgmusic = random.sample(bgmusiclist, 1)
-                pygame.mixer.music.load('mids/%s' % bgmusic[0])
-                pygame.mixer.music.play()
-                logger.info("更新播放背景音乐： %s" % bgmusic[0])
+                if music_play_flag is True and keyboard_p == 0:
+                    bgmusic = random.sample(bgmusiclist, 1)
+                    pygame.mixer.music.load('mids/%s' % bgmusic[0])
+                    pygame.mixer.music.play()
+                    logger.info("更新播放背景音乐： %s" % bgmusic[0])
             for events in pygame.event.get():  # event handling loop
                 if events.type == QUIT or (events.type == KEYUP and events.key == K_ESCAPE):
                     # 用户点击关闭程序，或者按下键盘的esc键，程序退出
@@ -132,7 +135,7 @@ def main():
                 if events.type  == KEYUP and events.key == K_b:
                     # 用户按下键盘字母b键，处理用户悔棋功能
                     # 以下为2019-07-04完成的内容
-                    if mouse_clecked_count == 0:
+                    if mouse_clicked_count == 0:
                         break
                     else:
                         linelist = game_fn.readinfofile(infofilename)
@@ -144,8 +147,8 @@ def main():
                         revealedBoxes = game_fn.revealedboxesstrtolist(revealedBoxesstr)
                         all_piecesstr = linelist[len(linelist) - 2]
                         all_pieces = game_fn.allpiecesstrtolist(all_piecesstr)
-                        # 还原mouse_clecked_count的数量
-                        mouse_clecked_count -= 1
+                        # 还原mouse_clicked_count的数量
+                        mouse_clicked_count -= 1
                         # 还原playerinfo的内容和状态
                         nowPlayer = playerinfo['nowPlayer']
                         playerinfo['nowPlayer'] = all_settings.player2_name if nowPlayer == all_settings.player1_name else all_settings.player1_name
@@ -156,6 +159,16 @@ def main():
                         # 加载悔棋的音效
                         soundobj = pygame.mixer.Sound(all_settings.hq)
                         soundobj.play()
+                if events.type == KEYUP and events.key == K_p:
+                    # 用户按下键盘字母p键，背景音乐停止，再次按下p键再次播放
+                    if keyboard_p == 1:
+                        music_play_flag = True
+                        keyboard_p = 0
+                    else:
+                        pygame.mixer.music.stop()
+                        music_play_flag = False
+                        keyboard_p = 1
+                        logger.info('背景音乐停止！')
 
             box_x, box_y = game_fn.getBoxXY(mouse_x, mouse_y)
             if box_x != None and box_y != None:
@@ -170,19 +183,19 @@ def main():
                         soundobj = pygame.mixer.Sound(all_settings.zqwc)
                         soundobj.play()
                         piece_name = all_pieces[box_numX][box_numY][0]
-                        mouse_clecked_count += 1
+                        mouse_clicked_count += 1
                         piecelist = piece_name.split('_')
                         piece_color = piecelist[0]
-                        if mouse_clecked_count == 1:
+                        if mouse_clicked_count == 1:
                             playerinfo['pieceColor'] = piece_color
                         firstSelection = None
                         bplayer = all_settings.player2_name
-                        if mouse_clecked_count % 2 != 0:
+                        if mouse_clicked_count % 2 != 0:
                             playerinfo['nowPlayer'] = all_settings.player2_name
                             bplayer = all_settings.player1_name
                         else:
                             playerinfo['nowPlayer'] = all_settings.player1_name
-                        writestr = '%s|%d|%s|%s|(%d, %d)' % (game_fn.getnowtime(), mouse_clecked_count, bplayer, piece_name, box_numX, box_numY)
+                        writestr = '%s|%d|%s|%s|(%d, %d)' % (game_fn.getnowtime(), mouse_clicked_count, bplayer, piece_name, box_numX, box_numY)
                         game_fn.writeinfofile(infofilename, writestr)
                         game_fn.writeinfofile(infofilename, str(all_pieces))
                         game_fn.writeinfofile(infofilename, str(revealedBoxes))
@@ -245,7 +258,7 @@ def main():
 
                                 pieceVSpiece_info = game_fn.pieceVSpiece(displaySurf, firstSelection, secSelection, revealedBoxes, all_pieces)
                                 pieceVSpiece_count = int(pieceVSpiece_info[0])
-                                mouse_clecked_count += pieceVSpiece_count
+                                mouse_clicked_count += pieceVSpiece_count
                                 all_pieces = pieceVSpiece_info[1]
                                 revealedBoxes = pieceVSpiece_info[2]
                                 if nowPlayer == all_settings.player1_name:
@@ -253,13 +266,13 @@ def main():
                                 if nowPlayer == all_settings.player2_name:
                                     player2_checked_count += 1
                                 bplayer = all_settings.player2_name
-                                if mouse_clecked_count % 2 != 0:
+                                if mouse_clicked_count % 2 != 0:
                                     playerinfo['nowPlayer'] = all_settings.player2_name
                                     bplayer = all_settings.player1_name
                                 else:
                                     playerinfo['nowPlayer'] = all_settings.player1_name
                                 writestr = '%s|%d|%s|%s_%s|(%d, %d)|%s_%s|(%d, %d)' % \
-                                           (game_fn.getnowtime(), mouse_clecked_count, bplayer, firstSelection[2], firstSelection[3], firstSelection[0], firstSelection[1], secSelection[2], secSelection[3], secSelection[0], secSelection[1])
+                                           (game_fn.getnowtime(), mouse_clicked_count, bplayer, firstSelection[2], firstSelection[3], firstSelection[0], firstSelection[1], secSelection[2], secSelection[3], secSelection[0], secSelection[1])
                                 game_fn.writeinfofile(infofilename, writestr)
                                 game_fn.writeinfofile(infofilename, str(all_pieces))
                                 game_fn.writeinfofile(infofilename, str(revealedBoxes))
@@ -267,11 +280,11 @@ def main():
                                 secSelection = None
                                 haswon = game_fn.hasWon(displaySurf, revealedBoxes, all_pieces, playerinfo)
                                 if haswon[0] == True:
-                                    writestr = '%s 第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clecked_count + 1, haswon[1], playerinfo['totalCount'])
+                                    writestr = '%s 第%d步：%s===>第%d局游戏结束！！！' % (game_fn.getnowtime(), mouse_clicked_count + 1, haswon[1], playerinfo['totalCount'])
                                     writestr1 = '*****第%d局游戏开始*****' % (playerinfo['totalCount'] + 1)
                                     game_fn.writeinfofile(infofilename, writestr)
                                     game_fn.writeinfofile(infofilename, writestr1)
-                                    all_pieces, revealedBoxes, mouse_clecked_count, player1_checked_count, player2_checked_count, playerinfo = game_fn.startGame(playerinfo)
+                                    all_pieces, revealedBoxes, mouse_clicked_count, player1_checked_count, player2_checked_count, playerinfo = game_fn.startGame(playerinfo)
             pygame.display.update()
             fpsClock.tick(all_settings.FPS)
     except Exception:
